@@ -1,5 +1,17 @@
-venv/
+# Python
 __pycache__/
-*.db
+*.py[cod]
+venv/
+*.egg-info/
+
+# Секреты
 .env
-*.pyc
+
+# Базы данных и экспорты
+*.db
+*.csv
+*.sqlite3
+
+# Временные файлы
+*.log
+.DS_Store
