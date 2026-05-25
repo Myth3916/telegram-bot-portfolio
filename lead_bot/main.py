@@ -1,4 +1,3 @@
-# main.py
 import os
 import sqlite3                # <-- для работы с базой данных
 from datetime import datetime  # <-- для времени
@@ -73,7 +72,7 @@ def save_lead(message):
         message.from_user.username,
         message.text
     )
-    # отправим данные админу (тебе)
+    # отправим данные админу (мне)
     bot.send_message(message.from_user.id, f"✅ Принято: {message.text}")
    
 
