@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Поиск: {{ query }} — Библия онлайн</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #8B4513;
+            text-decoration: none;
+            font-size: 1.1em;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #8B4513;
+            padding-bottom: 10px;
+        }
+        
+        .search-form {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            width: 70%;
+            padding: 12px;
+            font-size: 1.1em;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Georgia', serif;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #8B4513;
+        }
+        
+        .search-button {
+            padding: 12px 25px;
+            font-size: 1.1em;
+            background: #8B4513;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        .search-button:hover {
+            background: #6d3610;
+        }
+        
+        .results-info {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+        
+        .result-item {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+        
+        .result-reference {
+            font-weight: bold;
+            color: #8B4513;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .result-reference a {
+            color: #8B4513;
+            text-decoration: none;
+        }
+        
+        .result-reference a:hover {
+            text-decoration: underline;
+        }
+        
+        .result-text {
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        
+        .highlight {
+            background: yellow;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        
+        .no-results {
+            background: white;
+            padding: 30px;
+            border-radius: 5px;
+            text-align: center;
+            color: #666;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-link">← На главную</a>
+    
+    <h1>🔍 Поиск по Библии</h1>
+    
+    <div class="search-form">
+        <form action="/search" method="get">
+            <input 
+                type="text" 
+                name="q" 
+                class="search-input" 
+                placeholder="Введите слово для поиска..." 
+                value="{{ query }}"
+                autofocus
+            >
+            <button type="submit" class="search-button">Найти</button>
+        </form>
+    </div>
+    
+    {% if query %}
+        <div class="results-info">
+            Найдено результатов: {{ results|length }} (показаны первые 50)
+        </div>
+        
+        {% if results %}
+            {% for result in results %}
+                <div class="result-item">
+                    <div class="result-reference">
+                        <a href="/book/{{ result.book_order }}/chapter/{{ result.chapter }}#verse-{{ result.verse_num }}">
+                            📜 {{ result.book }}, 
+                            {{ chapter_names.get(result.book, 'Глава') }} {{ result.chapter }}, 
+                            Стих {{ result.verse_num }}
+                        </a>
+                    </div>
+                    <div class="result-text">
+                        {{ result.text }}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-results">
+                😔 По запросу "{{ query }}" ничего не найдено.<br>
+                Попробуйте другое слово или проверьте правописание.
+            </div>
+        {% endif %}
+    {% endif %}
+</body>
+</html>

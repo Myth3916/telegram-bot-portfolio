@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ book_name }}, Глава {{ chapter_num }} — Библия онлайн</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            line-height: 1.8;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #8B4513;
+            text-decoration: none;
+            font-size: 1.1em;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #8B4513;
+            padding-bottom: 10px;
+            font-size: 1.8em;
+        }
+        
+        .chapter-content {
+            background: white;
+            padding: 30px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        
+        .verse {
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        
+        .verse-number {
+            font-weight: bold;
+            color: #8B4513;
+            margin-right: 8px;
+            font-size: 0.9em;
+            vertical-align: super;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        
+        .nav-link {
+            color: #8B4513;
+            text-decoration: none;
+            font-size: 1.1em;
+            padding: 10px 20px;
+            border: 1px solid #8B4513;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+        
+        .nav-link:hover {
+            background: #8B4513;
+            color: white;
+        }
+        
+        .nav-link.disabled {
+            color: #ccc;
+            border-color: #ccc;
+            pointer-events: none;
+        }
+
+        /* Подсветка стиха, на который перешли по якорю */
+        .verse:target {
+            background: #fffacd;
+            padding: 10px;
+            border-left: 4px solid #8B4513;
+            border-radius: 5px;
+            animation: highlight 2s ease-in-out;
+        }
+
+        @keyframes highlight {
+            0% { background: #ffeb3b; }
+            100% { background: #fffacd; }
+        }
+    </style>
+</head>
+<body>
+    <a href="/book/{{ book_order }}" class="back-link">← Назад к списку глав</a>
+    
+    <h1>📖 {{ book_name }}, Глава {{ chapter_num }}</h1>
+    
+    <div class="chapter-content">
+        {% for verse in verses %}
+            <div class="verse" id="verse-{{ verse.verse_num }}">
+                <span class="verse-number">{{ verse.verse_num }}</span>
+                {{ verse.text }}
+            </div>
+        {% endfor %}
+    </div>
+    
+    <div class="navigation">
+        {% if prev_chapter %}
+            <a href="/book/{{ book_order }}/chapter/{{ prev_chapter }}" class="nav-link">
+                ← Глава {{ prev_chapter }}
+            </a>
+        {% else %}
+            <span class="nav-link disabled">← Предыдущая глава</span>
+        {% endif %}
+        
+        {% if next_chapter %}
+            <a href="/book/{{ book_order }}/chapter/{{ next_chapter }}" class="nav-link">
+                Глава {{ next_chapter }} →
+            </a>
+        {% else %}
+            <span class="nav-link disabled">Следующая глава →</span>
+        {% endif %}
+    </div>
+</body>
+</html>
