@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>{{ book_name }}, Глава {{ chapter_num }} — Библия онлайн</title>
+    <title>{{ book_name }}, {{ chapter_name }} {{ chapter_num }} — Библия онлайн</title>
     <style>
         body {
             font-family: 'Georgia', serif;
@@ -100,7 +100,7 @@
 <body>
     <a href="/book/{{ book_order }}" class="back-link">← Назад к списку глав</a>
     
-    <h1>📖 {{ book_name }}, Глава {{ chapter_num }}</h1>
+    <h1>📖 {{ book_name }}, {{ chapter_name }} {{ chapter_num }}</h1>
     
     <div class="chapter-content">
         {% for verse in verses %}
@@ -114,7 +114,7 @@
     <div class="navigation">
         {% if prev_chapter %}
             <a href="/book/{{ book_order }}/chapter/{{ prev_chapter }}" class="nav-link">
-                ← Глава {{ prev_chapter }}
+                ← {{ chapter_name }} {{ prev_chapter }}
             </a>
         {% else %}
             <span class="nav-link disabled">← Предыдущая глава</span>
@@ -122,7 +122,7 @@
         
         {% if next_chapter %}
             <a href="/book/{{ book_order }}/chapter/{{ next_chapter }}" class="nav-link">
-                Глава {{ next_chapter }} →
+                {{ chapter_name }} {{ next_chapter }} →
             </a>
         {% else %}
             <span class="nav-link disabled">Следующая глава →</span>

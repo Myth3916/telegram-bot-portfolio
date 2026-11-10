@@ -1,8 +1,16 @@
 from flask import Flask, render_template,request
 import sqlite3
+import re
 
 app = Flask(__name__)
 DATABASE = 'bible.db'
+
+# Регистрируем функцию REGEXP для SQLite
+def regexp(pattern, text):
+    """Функция для регулярных выражений в SQL"""
+    if text is None:
+        return False
+    return re.search(pattern, text) is not None
 
 # Словарь: как называть главы в разных книгах
 CHAPTER_NAMES = {
@@ -17,8 +25,13 @@ def get_chapter_name(book_name):
     return CHAPTER_NAMES.get(book_name, 'Глава')
 
 def get_db():
+    """Подключается к базе и возвращает соединение"""
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
+    
+    # Регистрируем функцию REGEXP для использования в SQL-запросах
+    conn.create_function("REGEXP", 2, regexp)
+    
     return conn
 
 @app.route('/')
@@ -145,36 +158,45 @@ def search():
     conn = get_db()
     cursor = conn.cursor()
     
-    # Разбиваем запрос на отдельные слова
     words = query.split()
     
-    # Строим SQL-запрос с условием LIKE для каждого слова
-    # Например: WHERE text LIKE '%Бог%' AND text LIKE '%свет%'
-    conditions = []
-    params = []
-    for word in words:
-        conditions.append("text LIKE ?")
-        params.append(f'%{word}%')
+    # Если одно слово — ищем как целое слово через REGEXP
+    if len(words) == 1:
+        escaped_word = re.escape(words[0])
+        pattern = r'\b' + escaped_word + r'\b'
+        
+        sql = '''
+            SELECT book, book_order, chapter, verse_num, text 
+            FROM verses 
+            WHERE text REGEXP ?
+            ORDER BY book_order, chapter, verse_num
+            LIMIT 50
+        '''
+        cursor.execute(sql, (pattern,))
     
-    where_clause = " AND ".join(conditions)
+    # Если фраза — ищем каждое слово отдельно через LIKE
+    else:
+        conditions = []
+        params = []
+        for word in words:
+            conditions.append("text LIKE ?")
+            params.append(f'%{word}%')
+        
+        where_clause = " AND ".join(conditions)
+        
+        sql = f'''
+            SELECT book, book_order, chapter, verse_num, text 
+            FROM verses 
+            WHERE {where_clause}
+            ORDER BY book_order, chapter, verse_num
+            LIMIT 50
+        '''
+        cursor.execute(sql, params)
     
-    # Ищем стихи, содержащие ВСЕ слова
-    sql = f'''
-        SELECT book, book_order, chapter, verse_num, text 
-        FROM verses 
-        WHERE {where_clause}
-        ORDER BY book_order, chapter, verse_num
-        LIMIT 50
-    '''
-    
-    cursor.execute(sql, params)
     results = cursor.fetchall()
     conn.close()
     
-    return render_template('search.html', 
-                         query=query, 
-                         results=results,
-                         chapter_names=CHAPTER_NAMES)  # ← передаём весь словарь
+    return render_template('search.html', query=query, results=results, chapter_names=CHAPTER_NAMES)
 
 
 if __name__ == '__main__':
