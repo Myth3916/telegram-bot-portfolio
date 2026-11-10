@@ -170,7 +170,7 @@ def search():
             FROM verses 
             WHERE text REGEXP ?
             ORDER BY book_order, chapter, verse_num
-            LIMIT 50
+            
         '''
         cursor.execute(sql, (pattern,))
     
@@ -189,7 +189,7 @@ def search():
             FROM verses 
             WHERE {where_clause}
             ORDER BY book_order, chapter, verse_num
-            LIMIT 50
+            
         '''
         cursor.execute(sql, params)
     
